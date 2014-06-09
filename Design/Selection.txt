@@ -5,8 +5,7 @@ Selection(generation):
 	sort generation by fitness
 	add top 2 individuals to nextGeneration
 	until(nextGeneration is full)
-			     randomizeOrder(generation)
-			     sort the first 20 individuals by fitness
+			     isolate twenty individuals
 			     pick the top individual(according to pop1)
 			     pict the top individual(according to pop2)
 			     make two children from top individuals
