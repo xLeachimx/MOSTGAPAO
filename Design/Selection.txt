@@ -7,7 +7,11 @@ Selection(generation):
 	until(nextGeneration is full)
 			     randomizeOrder(generation)
 			     sort the first 20 individuals by fitness
-			     pick the top two
-			     make two children
+			     pick the top individual(according to pop1)
+			     pict the top individual(according to pop2)
+			     make two children from top individuals
 			     (mutate children)
 			     add children to nextGeneration
+
+The mating will be using single point crossover and characters are the level of
+grainularity
