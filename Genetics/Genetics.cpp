@@ -85,11 +85,7 @@ void genSort(Object *gen, int size){
 
 void randomize(Object gen[], int size, int cycles){
   for(int i = 0;i < cycles;i++){
-    int one = rand()%size;
-    int two = rand()%size;
-    Object temp = gen[one];
-    gen[one] = gen[two];
-    gen[two] = temp;
+    swap(gen[rand()%size],gen[rand()%size]);
   }
 }
 
