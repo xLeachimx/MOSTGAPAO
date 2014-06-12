@@ -17,7 +17,7 @@ Children crossover(Parents p){
   voxel first[NUM_VOX];
   voxel second[NUM_VOX];
   for(int i = 0;i < NUM_VOX;i++){
-    if(rand()%100 < CROSS_PER && crossed < CROSS_POINTS){
+    if(crossed < CROSS_POINTS && rand()%100 < CROSS_PER){
       father = !father;
       crossed++;
     }
@@ -26,14 +26,15 @@ Children crossover(Parents p){
   }
   mutate(first,NUM_VOX);
   mutate(second,NUM_VOX);
-  Children temp;
-  temp.first = Object(first);
-  temp.second = Object(second);
+  Children result;
+  result.first = Object(first);
+  result.second = Object(second);
+  return result;
 }
 
 void mutate(voxel v[], int size){
   for(int i = 0;i < size;i++){
-    if(rand()%100 < MUTATION_PER){
+    if(rand()%1000 < MUTATION_PER){
       int *mutation = new int;
       *mutation = rand();
       v[i].x = ((char *)mutation)[1];
@@ -44,14 +45,15 @@ void mutate(voxel v[], int size){
 }
 
 Parents selection(Object gen[], int size){
-  randomize(gen,size*2);
-  genSort(gen,SELECTION_SIZE);
+  randomize(gen,size*2);//jumble the generation up
+  genSort(gen,SELECTION_SIZE);//sort out a SELECTION_SIZE group
   Parents result;
-  result.father = gen[0];
+  result.father = gen[0];//take best members of random grouping
   result.mother = gen[1];
   return result;
 }
 
+//generic quicksort implementation
 void genSort(Object *gen, int size){
   if(size <= 1)return;
   if(size == 2){
@@ -60,7 +62,7 @@ void genSort(Object *gen, int size){
     }
     return;
   }
-  Object *pivot = gen[0];
+  Object *pivot = &gen[0];
   int left = 1;
   int right = size - 1;
   while(left < right){

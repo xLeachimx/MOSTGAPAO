@@ -8,7 +8,7 @@
 
 const int CROSS_PER = 20;
 const int CROSS_POINTS = 1;
-const int MUTATION_PER = 1;
+const int MUTATION_PER = 1;//out of a thousand
 const int SELECTION_SIZE = 10;
 
 
