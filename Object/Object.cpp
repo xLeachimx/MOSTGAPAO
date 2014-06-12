@@ -40,6 +40,10 @@ int Object::getPhiRating(){
   return phiRating;
 }
 
+void Object::toCSV(ostream &out){
+  out << connectivity << "," << phiRating << '\n';
+}
+
 void Object::calcQuality(){
   calcConnectivity();
   calcPhiRating();

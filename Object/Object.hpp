@@ -5,6 +5,9 @@
  *
  */
 
+#include <ostream>
+using std::ostream;
+
 struct voxel{
   char x;
   char y;
@@ -27,6 +30,7 @@ public:
   voxel *getVoxels();
   int getConnectivity();
   int getPhiRating();
+  void toCSV(ostream &out);//outputs quality values
 
   void calcQuaility();
 
