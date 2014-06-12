@@ -4,8 +4,12 @@
  *   Implementation of algortihms in Genetics.hpp 
  */
 
+#include <cstdlib>
+using namespace std::rand;
+
 //needed subfuntions
-void randomize(Object gen[], int cycles);
+void randomize(Object gen[], int size, int cycles);
+void swap(Object &one, Object &two);
 
 Children crossover(Parents p){
   int crossed = 0;
@@ -49,4 +53,49 @@ Parents selection(Object gen[], int size){
 }
 
 void genSort(Object *gen, int size){
+  if(size <= 1)return;
+  if(size == 2){
+    if(gen[0] > gen[1]){
+      swap(gen[0],gen[1]);
+    }
+    return;
+  }
+  Object *pivot = gen[0];
+  int left = 1;
+  int right = size - 1;
+  while(left < right){
+    if(gen[left] > *pivot){
+      if(gen[right] < *pivot){
+	swap(gen[left],gen[right]);
+	left++;
+	right--;
+      }
+      else{
+	right--;
+      }
+    }
+    else{
+      left++;
+    }
+  }
+  swap(gen[0],gen[right]);
+  genSort(gen,right);
+  genSort(&gen[left],size-left);
+}
+
+void randomize(Object gen[], int size, int cycles){
+  for(int i = 0;i < cycles;i++){
+    int one = rand()%size;
+    int two = rand()%size;
+    Object temp = gen[one];
+    gen[one] = gen[two];
+    gen[two] = temp;
+  }
+}
+
+
+void swap(Object &one, Object &two){
+  Object temp = one;
+  one = two;
+  two = temp;
 }
