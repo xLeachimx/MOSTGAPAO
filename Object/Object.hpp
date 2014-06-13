@@ -32,7 +32,7 @@ public:
   int getPhiRating();
   void toCSV(ostream &out);//outputs quality values
 
-  void calcQuaility();
+  void calcQuality();
 
   //conparative operators (they compare using pareto dominance over the connectivity and phiRating qualities)
   bool operator>(const Object &comp);

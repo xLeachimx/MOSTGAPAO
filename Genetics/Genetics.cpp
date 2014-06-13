@@ -3,9 +3,9 @@
  *Abstract:
  *   Implementation of algortihms in Genetics.hpp 
  */
-
+#include "Genetics.hpp"
 #include <cstdlib>
-using namespace std::rand;
+using std::rand;
 
 //needed subfuntions
 void randomize(Object gen[], int size, int cycles);
@@ -21,8 +21,8 @@ Children crossover(Parents p){
       father = !father;
       crossed++;
     }
-    first[i] = father?p.father.getVoxels[i]:p.mother.getVoxels[i];
-    second[i] = father?p.mother.getVoxels[i]:p.father.getVoxels[i];
+    first[i] = father?p.father.getVoxels()[i]:p.mother.getVoxels()[i];
+    second[i] = father?p.mother.getVoxels()[i]:p.father.getVoxels()[i];
   }
   mutate(first,NUM_VOX);
   mutate(second,NUM_VOX);
@@ -33,19 +33,21 @@ Children crossover(Parents p){
 }
 
 void mutate(voxel v[], int size){
+  int *mut = new int;
   for(int i = 0;i < size;i++){
     if(rand()%1000 < MUTATION_PER){
-      int *mutation = new int;
-      *mutation = rand();
-      v[i].x = ((char *)mutation)[1];
-      v[i].y = ((char *)mutation)[2];
-      v[i].z = ((char *)mutation)[3];
+      *mut = rand();
+      char *mod = ((char *)mut);
+      v[i].x = mod[1];
+      v[i].y = mod[2];
+      v[i].z = mod[3];
     }
   }
+  delete mut;
 }
 
 Parents selection(Object gen[], int size){
-  randomize(gen,size*2);//jumble the generation up
+  randomize(gen,size,size*2);//jumble the generation up
   genSort(gen,SELECTION_SIZE);//sort out a SELECTION_SIZE group
   Parents result;
   result.father = gen[0];//take best members of random grouping
