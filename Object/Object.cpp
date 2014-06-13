@@ -20,12 +20,18 @@ Object::Object(voxel copy[NUM_VOX]){
     voxels[i] = copy[i];
     applyTransform(voxels[i]);
   }
+  connectivity = 0.0;
+  phiRating = 0.0;
+  fitness = 0;
 }
 
 Object::Object(const Object &copy){
   for(int i = 0;i < NUM_VOX;i++){
     voxels[i] = copy.voxels[i];
   }
+  connectivity = copy.connectivity;
+  phiRating = copy.phiRating;
+  fitness = copy.fitness;
 }
 
 
@@ -87,6 +93,9 @@ Object &Object::operator=(const Object &copy){
     voxels[i] = copy.voxels[i];
     applyTransform(voxels[i]);
   }
+  connectivity = copy.connectivity;
+  phiRating = copy.phiRating;
+  fitness = copy.fitness;
   return *this;
 }
 
