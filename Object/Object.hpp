@@ -5,6 +5,9 @@
  *
  */
 
+#ifndef OBJECT_HPP
+#define OBJECT_HPP
+
 #include <ostream>
 using std::ostream;
 
@@ -56,3 +59,5 @@ private:
   double connectivity;
   double phiRating;
 };
+
+#endif

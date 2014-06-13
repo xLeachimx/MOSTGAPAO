@@ -22,3 +22,6 @@
 
 # Emacs backup files
 *~
+
+#data records
+*.csv

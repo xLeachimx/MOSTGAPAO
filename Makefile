@@ -5,19 +5,23 @@ PROGNAME = STGA
 all: main
 
 main: copy $(COMPILEDFILES)
+	cd $(TEMPFOLDER) && \
 	g++ $(COMPILEDFILES) main.cpp -o $(PROGNAME)
+	cp $(TEMPFOLDER)/$(PROGNAME) $(PROGNAME)
 
 copy:
 	mkdir $(TEMPFOLDER)
 	cp Genetics/* $(TEMPFOLDER)/
 	cp Object/* $(TEMPFOLDER)/
+	cp main.cpp $(TEMPFOLDER)/
 
 Genetics.o:
-	g++ $(TEMPFOLDER)/Genetics.cpp -c
+	cd $(TEMPFOLDER) && \
+	g++ Genetics.cpp -c
 
 Object.o:
-	g++ $(TEMPFOLDER)/Object.cpp -c
+	cd $(TEMPFOLDER) && \
+	g++ Object.cpp -c
 
 clean:
 	rm -rf $(TEMPFOLDER)
-	rm *.o
