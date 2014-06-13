@@ -14,7 +14,7 @@ Object::Object(){
   phiRating = 0.0;
 }
 
-Object::Object(voxel copy[VOX_NUM]){
+Object::Object(voxel copy[NUM_VOX]){
   for(int i = 0 ;i < NUM_VOX;i++){
     voxels[i] = copy[i];
     applyTransform(voxels[i]);
@@ -76,13 +76,13 @@ bool Object::operator!=(const Object &comp){
 
 Object &Object::operator=(const Object &copy){
   for(int i = 0 ;i < NUM_VOX;i++){
-    voxels[i] = copy[i];
+    voxels[i] = copy.voxels[i];
     applyTransform(voxels[i]);
   }
   return *this;
 }
 
-void Object::applyTansform(voxel &v){
+void Object::applyTransform(voxel &v){
   v.size = (v.x | v.y) ^ v.z;
 }
 
@@ -91,7 +91,7 @@ void Object::calcConnectivity(){
   for(int i = 0;i < NUM_VOX;i++){
     for(int j = 0;j < NUM_VOX;j++){
       if(i != j){
-	int comparedSize = voxel[i].size + voxel[j].size;
+	int comparedSize = voxels[i].size + voxels[j].size;
 	if(distance(i,j) < comparedSize)connections++;
       }
     }
@@ -100,12 +100,12 @@ void Object::calcConnectivity(){
 }
 
 void Object::calcPhiRating(){
-  double maxX = voxel[0].x+voxel.size;
-  double maxY = voxel[0].x+voxel.size;
-  double maxZ = voxel[0].x+voxel.size;
-  double minX = voxel[0].x-voxel.size;
-  double minY = voxel[0].x-voxel.size;
-  double minZ = voxel[0].x-voxel.size;
+  double maxX = voxels[0].x+voxels[0].size;
+  double maxY = voxels[0].x+voxels[0].size;
+  double maxZ = voxels[0].x+voxels[0].size;
+  double minX = voxels[0].x-voxels[0].size;
+  double minY = voxels[0].x-voxels[0].size;
+  double minZ = voxels[0].x-voxels[0].size;
 
   for(int i = 1;i < NUM_VOX;i++){
     //reassign x
@@ -136,18 +136,18 @@ void Object::calcPhiRating(){
 
 bool Object::pareToDominate(const Object &comp){
   if(connectivity <= comp.connectivity && phiRating <= comp.phiRating){
-    if(connectivty < comp.connectivity || phiRating < comp.phiRating)return true;
+    if(connectivity < comp.connectivity || phiRating < comp.phiRating)return true;
   }
   return false;
 }
 
 bool Object::pareToEqual(const Object &comp){
-  return connectivity == comp.connectivity && phiRating == comp.phiRating);
+  return (connectivity == comp.connectivity && phiRating == comp.phiRating);
 }
 
 double Object::distance(int one, int two){
-  double x = (double)((int)voxels[one].x-(int)voxel[two].x);
-  double y = (double)((int)voxels[one].y-(int)voxel[two].y);
-  double z = (double)((int)voxels[one].z-(int)voxel[two].z);
+  double x = (double)((int)voxels[one].x-(int)voxels[two].x);
+  double y = (double)((int)voxels[one].y-(int)voxels[two].y);
+  double z = (double)((int)voxels[one].z-(int)voxels[two].z);
   return sqrt((x*x) + (y*y) + (z*z));
 }
