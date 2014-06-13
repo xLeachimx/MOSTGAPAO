@@ -56,6 +56,9 @@ int main(int argc, char **argv){
     for(int j = 0;j < GEN_SIZE;j++){
       generation[j].calcQuality();
     }
+    for(int j = 0;j < GEN_SIZE;j++){
+      generation[j].calcFitness(generation, GEN_SIZE, j);
+    }
     genSort(generation,GEN_SIZE);//sort according to dominance
     //record keeping
     for(int j = 0;j < GEN_SIZE;j++){
@@ -81,6 +84,9 @@ int main(int argc, char **argv){
   fout << NUM_GEN <<endl;
   for(int j = 0;j < GEN_SIZE;j++){
     generation[j].calcQuality();
+  }
+  for(int j = 0;j < GEN_SIZE;j++){
+    generation[j].calcFitness(generation, GEN_SIZE, j);
   }
   genSort(generation,GEN_SIZE);//sort according to dominance
   //record keeping

@@ -12,6 +12,7 @@ using std::sqrt;
 Object::Object(){
   connectivity = 0.0;
   phiRating = 0.0;
+  fitness = 0;
 }
 
 Object::Object(voxel copy[NUM_VOX]){
@@ -41,7 +42,7 @@ int Object::getPhiRating(){
 }
 
 void Object::toCSV(ostream &out){
-  out << connectivity << "," << phiRating << '\n';
+  out << connectivity << "," << phiRating << "," << fitness <<'\n';
 }
 
 void Object::calcQuality(){
@@ -49,29 +50,36 @@ void Object::calcQuality(){
   calcPhiRating();
 }
 
+void Object::calcFitness(Object *gen, int size, int skip){
+  fitness = 0;
+  for(int i = 0;i < size;i++){
+    if(i == skip)continue;
+    if(pareToDominate(gen[i]))fitness++;
+  }
+}
 
 bool Object::operator>(const Object &comp){
-  return pareToDominate(comp);
+  return fitness > comp.fitness;
 }
 
 bool Object::operator>=(const Object &comp){
-  return pareToDominate(comp) || pareToEqual(comp);
+  return fitness >= comp.fitness;
 }
 
 bool Object::operator<(const Object &comp){
-  return !(pareToDominate(comp) || pareToEqual(comp));
+  return fitness < comp.fitness;
 }
 
 bool Object::operator<=(const Object &comp){
-  return pareToDominate(comp);
+  return fitness <= comp.fitness;
 }
 
 bool Object::operator==(const Object &comp){
-  return pareToEqual(comp);
+  return fitness == comp.fitness;
 }
 
 bool Object::operator!=(const Object &comp){
-  return !pareToEqual(comp);
+  return fitness != comp.fitness;
 }
 
 Object &Object::operator=(const Object &copy){
@@ -139,10 +147,6 @@ bool Object::pareToDominate(const Object &comp){
     if(connectivity < comp.connectivity || phiRating < comp.phiRating)return true;
   }
   return false;
-}
-
-bool Object::pareToEqual(const Object &comp){
-  return (connectivity == comp.connectivity && phiRating == comp.phiRating);
 }
 
 double Object::distance(int one, int two){

@@ -36,6 +36,7 @@ public:
   void toCSV(ostream &out);//outputs quality values
 
   void calcQuality();
+  void calcFitness(Object *gen, int size, int skip);
 
   //conparative operators (they compare using pareto dominance over the connectivity and phiRating qualities)
   bool operator>(const Object &comp);
@@ -52,12 +53,12 @@ protected:
   void calcConnectivity();
   void calcPhiRating();
   bool pareToDominate(const Object &comp);//is this object pareto dominant over the comp object
-  bool pareToEqual(const Object &comp);//is the object pareto equivalent with the comp object
   double distance(int one,int two);//finds the distance between two voxels
 private:
   voxel voxels[NUM_VOX];
   double connectivity;
   double phiRating;
+  int fitness;
 };
 
 #endif
