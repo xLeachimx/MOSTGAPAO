@@ -7,7 +7,11 @@
 
 #include "Object.hpp"
 #include <cmath>
+#include <iostream>
 using std::sqrt;
+using std::abs;
+using std::cout;
+using std::endl;
 
 Object::Object(){
   connectivity = 0.0;
@@ -100,7 +104,8 @@ Object &Object::operator=(const Object &copy){
 }
 
 void Object::applyTransform(voxel &v){
-  v.size = (v.x | v.y) ^ v.z;
+  v.size = ((v.x + v.y + v.z)/3)|1;//ensures the size is at least 1
+  v.size = (v.size < 0)?-v.size:v.size;
 }
 
 void Object::calcConnectivity(){
@@ -108,21 +113,23 @@ void Object::calcConnectivity(){
   for(int i = 0;i < NUM_VOX;i++){
     for(int j = 0;j < NUM_VOX;j++){
       if(i != j){
+	applyTransform(voxels[i]);
+	applyTransform(voxels[j]);
 	int comparedSize = voxels[i].size + voxels[j].size;
 	if(distance(i,j) < comparedSize)connections++;
       }
     }
   }
-  connectivity = connections/NUM_VOX;
+  connectivity = abs((NUM_VOX/CON_RATIO)-(connections/NUM_VOX));
 }
 
 void Object::calcPhiRating(){
   double maxX = voxels[0].x+voxels[0].size;
-  double maxY = voxels[0].x+voxels[0].size;
-  double maxZ = voxels[0].x+voxels[0].size;
+  double maxY = voxels[0].y+voxels[0].size;
+  double maxZ = voxels[0].z+voxels[0].size;
   double minX = voxels[0].x-voxels[0].size;
-  double minY = voxels[0].x-voxels[0].size;
-  double minZ = voxels[0].x-voxels[0].size;
+  double minY = voxels[0].y-voxels[0].size;
+  double minZ = voxels[0].z-voxels[0].size;
 
   for(int i = 1;i < NUM_VOX;i++){
     //reassign x
@@ -149,6 +156,13 @@ void Object::calcPhiRating(){
       minZ = voxels[i].z-voxels[i].size;
     }
   }
+  double width = maxX-minX;
+  double height = maxZ-minZ;
+  double depth = maxY-minY;
+  if(width <= 0)cout << "No width" <<endl;
+  if(height <= 0)cout << "No height" <<endl;
+  if(depth <= 0)cout << "No depth" <<endl;
+  phiRating = abs((PHI - (width/height))+(PHI - (depth/width)));
 }
 
 bool Object::pareToDominate(const Object &comp){

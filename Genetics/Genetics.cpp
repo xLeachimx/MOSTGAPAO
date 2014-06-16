@@ -67,9 +67,9 @@ void genSort(Object *gen, int size){
   Object *pivot = &gen[0];
   int left = 1;
   int right = size - 1;
-  while(left < right){
-    if(gen[left] > *pivot){
-      if(gen[right] < *pivot){
+  while(left <= right){
+    if(gen[left] < *pivot){
+      if(gen[right] >= *pivot){
 	swap(gen[left],gen[right]);
 	left++;
 	right--;

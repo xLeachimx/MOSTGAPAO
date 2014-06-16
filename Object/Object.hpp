@@ -19,8 +19,8 @@ struct voxel{
 };
 
 const int NUM_VOX = 300;
-const int CON_RATIO = 4; //Ratio for maximum connectivity
-const int PHI = 1.618033988749894848204586834365;
+const double CON_RATIO = 4.0; //Ratio for maximum connectivity
+const int PHI = 1.618033988;
 
 class Object{
 public:

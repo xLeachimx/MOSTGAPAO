@@ -16,7 +16,7 @@ using std::time;
 #include "Object.hpp"
 #include "Genetics.hpp"
 
-const int NUM_GEN = 200;
+const int NUM_GEN = 500;
 const int GEN_SIZE = 100;
 const int ELITISM = 2;
 
