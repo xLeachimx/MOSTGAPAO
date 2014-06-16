@@ -55,11 +55,11 @@ Parents selection(Object gen[], int size){
   return result;
 }
 
-//generic quicksort implementation
+//generic quicksort implementation sort to DSC
 void genSort(Object *gen, int size){
   if(size <= 1)return;
   if(size == 2){
-    if(gen[0] > gen[1]){
+    if(gen[0] < gen[1]){
       swap(gen[0],gen[1]);
     }
     return;
@@ -70,13 +70,9 @@ void genSort(Object *gen, int size){
   while(left <= right){
     if(gen[left] < *pivot){
       if(gen[right] >= *pivot){
-	swap(gen[left],gen[right]);
-	left++;
-	right--;
+	swap(gen[left++],gen[right]);
       }
-      else{
-	right--;
-      }
+      right--;
     }
     else{
       left++;
