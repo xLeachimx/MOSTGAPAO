@@ -73,7 +73,7 @@ int main(int argc, char **argv){
     for(int j = 0;j < ((GEN_SIZE-ELITISM)/2);j++){
       product = crossover(selection(generation,GEN_SIZE));
       nextGen[ELITISM+(2*j)] = product.first;
-      nextGen[ELITISM+(2*j)] = product.second;
+      nextGen[ELITISM+(2*j)+1] = product.second;
     }
     //copying generation over
     for(int j = 0;j < GEN_SIZE;j++){
