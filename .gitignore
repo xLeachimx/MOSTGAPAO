@@ -19,9 +19,13 @@
 *.exe
 *.out
 *.app
+STGA
 
 # Emacs backup files
 *~
 
 #data records
 *.csv
+
+#design info
+*.scad

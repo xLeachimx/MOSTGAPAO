@@ -56,11 +56,11 @@ void Object::toCSV(ostream &out){
 }
 
 void Object::toScad(ostream &out){
-  out << "Connectivity:" << connectivity << endl;
-  out << "Phi Rating:" << phiRating <<endl;
+  out << "//Connectivity:" << connectivity << endl;
+  out << "//Phi Rating:" << phiRating <<endl;
   for(int i = 0;i < NUM_VOX;i++){
-    out << "translate([" << voxels[i].x << "," << voxels[i].y << "," << voxels[i].z << "])";
-    out << "sphere(r=" << voxels[i].size << ");" <<endl;
+    out << "translate([" << (int)voxels[i].x << "," << (int)voxels[i].y << "," << (int)voxels[i].z << "])";
+    out << "sphere(r=" << (int)voxels[i].size << ");" <<endl;
   }
 }
 
