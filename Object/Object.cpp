@@ -52,7 +52,16 @@ int Object::getPhiRating(){
 }
 
 void Object::toCSV(ostream &out){
-  out << connectivity << "," << phiRating << "," << fitness <<'\n';
+  out << connectivity << "," << phiRating << '\n';
+}
+
+void Object::toScad(ostream &out){
+  out << "Connectivity:" << connectivity << endl;
+  out << "Phi Rating:" << phiRating <<endl;
+  for(int i = 0;i < NUM_VOX;i++){
+    out << "translate([" << voxels[i].x << "," << voxels[i].y << "," << voxels[i].z << "])";
+    out << "sphere(r=" << voxels[i].size << ");" <<endl;
+  }
 }
 
 void Object::calcQuality(){
