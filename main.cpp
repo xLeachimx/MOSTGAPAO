@@ -34,11 +34,16 @@ int main(int argc, char **argv){
     cout << "Problem opening record file!" <<endl;
     return 0;
   }
+  //record basic info
+  fout << "Number of generations:" << NUM_GEN <<endl;
+  fout << "Generation Size:" << GEN_SIZE<<endl;
+  fout << "Elitism:" << ELITISM <<endl;
+  fout << "Number of Voxels:" << NUM_VOX <<endl;
   //primordial soup generator
   for(int i = 0;i < GEN_SIZE;i++){
-    int generator = rand();
+    int generator;
     for(int j = 0;j < NUM_VOX;j++){ 
-      int generator = rand();
+      generator = rand();
       char *mod = (char *)(&(generator));
       cloud[j].x = mod[1];
       cloud[j].y = mod[2];
@@ -47,7 +52,7 @@ int main(int argc, char **argv){
     }
     generation[i] = Object(cloud);
   }
-
+  fout << "Generation,Top Connectivity,Top PhiRating" <<endl;
   //running the GA
   Object nextGen[GEN_SIZE];
   for(int i = 0;i < NUM_GEN;i++){
@@ -56,10 +61,11 @@ int main(int argc, char **argv){
       generation[j].calcQuality();
     }
     for(int j = 0;j < GEN_SIZE;j++){
-      generation[j].calcFitness(generation, GEN_SIZE, j);
+      generation[j].calcFitness(generation, GEN_SIZE);
     }
     genSort(generation,GEN_SIZE);//sort according to dominance
     //record keeping
+    fout << i << ",";
     generation[0].toCSV(fout);
     //elitism
     for(int j = 0;j < ELITISM;j++){
@@ -78,15 +84,15 @@ int main(int argc, char **argv){
     }
   }
   //post-run records
-  fout << NUM_GEN <<endl;
   for(int j = 0;j < GEN_SIZE;j++){
     generation[j].calcQuality();
   }
   for(int j = 0;j < GEN_SIZE;j++){
-    generation[j].calcFitness(generation, GEN_SIZE, j);
+    generation[j].calcFitness(generation, GEN_SIZE);
   }
   genSort(generation,GEN_SIZE);//sort according to dominance
   //record keeping
+  fout << NUM_GEN << ",";
   generation[0].toCSV(fout);
   fout.close();
   fout.open(argv[2]);

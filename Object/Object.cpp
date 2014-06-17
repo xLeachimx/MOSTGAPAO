@@ -7,11 +7,8 @@
 
 #include "Object.hpp"
 #include <cmath>
-#include <iostream>
 using std::sqrt;
 using std::abs;
-using std::cout;
-using std::endl;
 
 Object::Object(){
   connectivity = 0.0;
@@ -22,7 +19,6 @@ Object::Object(){
 Object::Object(voxel copy[NUM_VOX]){
   for(int i = 0 ;i < NUM_VOX;i++){
     voxels[i] = copy[i];
-    applyTransform(voxels[i]);
   }
   connectivity = 0.0;
   phiRating = 0.0;
@@ -65,14 +61,14 @@ void Object::toScad(ostream &out){
 }
 
 void Object::calcQuality(){
+  for(int i = 0;i < NUM_VOX;i++)applyTansform(voxels[i]);
   calcConnectivity();
   calcPhiRating();
 }
 
-void Object::calcFitness(Object *gen, int size, int skip){
+void Object::calcFitness(Object *gen, int size){
   fitness = 0;
   for(int i = 0;i < size;i++){
-    if(i == skip)continue;
     if(pareToDominate(gen[i]))fitness++;
   }
 }
@@ -104,7 +100,6 @@ bool Object::operator!=(const Object &comp){
 Object &Object::operator=(const Object &copy){
   for(int i = 0 ;i < NUM_VOX;i++){
     voxels[i] = copy.voxels[i];
-    applyTransform(voxels[i]);
   }
   connectivity = copy.connectivity;
   phiRating = copy.phiRating;
@@ -114,7 +109,7 @@ Object &Object::operator=(const Object &copy){
 
 void Object::applyTransform(voxel &v){
   v.size = ((v.x + v.y + v.z)/3)|1;//ensures the size is at least 1
-  v.size = (v.size < 0)?-v.size:v.size;
+  v.size = (v.size < 0)?-v.size:v.size;//ensure non-negative number
 }
 
 void Object::calcConnectivity(){
@@ -122,8 +117,6 @@ void Object::calcConnectivity(){
   for(int i = 0;i < NUM_VOX;i++){
     for(int j = 0;j < NUM_VOX;j++){
       if(i != j){
-	applyTransform(voxels[i]);
-	applyTransform(voxels[j]);
 	int comparedSize = voxels[i].size + voxels[j].size;
 	if(distance(i,j) < comparedSize)connections++;
       }
@@ -168,9 +161,6 @@ void Object::calcPhiRating(){
   double width = maxX-minX;
   double height = maxZ-minZ;
   double depth = maxY-minY;
-  if(width <= 0)cout << "No width" <<endl;
-  if(height <= 0)cout << "No height" <<endl;
-  if(depth <= 0)cout << "No depth" <<endl;
   phiRating = abs((PHI - (width/height))+(PHI - (depth/width)));
 }
 
