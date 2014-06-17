@@ -37,7 +37,7 @@ public:
   void toScad(ostream &out);//outputs voxel to scad file for viewing
 
   void calcQuality();
-  void calcFitness(Object *gen, int size, int skip);
+  void calcFitness(Object *gen, int size);//calculates fitness using amount of pareto dominances
 
   //conparative operators (they compare using pareto dominance over the connectivity and phiRating qualities)
   bool operator>(const Object &comp);
@@ -50,7 +50,7 @@ public:
   //simple assignment operator
   Object &operator=(const Object &copy);
 protected:
-  void applyTransform(voxel &v);//This is where the schema trasform happens
+  void applyTransform(voxel &v);//This is where the schema transform happens
   void calcConnectivity();
   void calcPhiRating();
   bool pareToDominate(const Object &comp);//is this object pareto dominant over the comp object
