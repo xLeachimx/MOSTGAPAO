@@ -21,7 +21,7 @@ const int GEN_SIZE = 100;
 const int ELITISM = 2;
 
 int main(int argc, char **argv){
-  if(argc != 2)return 0;
+  if(argc != 3)return 0;
   //setup
   unsigned int seed = time(NULL);
   srand(seed);
@@ -31,7 +31,7 @@ int main(int argc, char **argv){
   ofstream fout;
   fout.open(argv[1]);
   if(!fout){
-    cout << "Problem opening file!" <<endl;
+    cout << "Problem opening record file!" <<endl;
     return 0;
   }
   //primordial soup generator
@@ -52,7 +52,6 @@ int main(int argc, char **argv){
   Object nextGen[GEN_SIZE];
   for(int i = 0;i < NUM_GEN;i++){
     cout << i <<endl;
-    fout << i << endl;
     for(int j = 0;j < GEN_SIZE;j++){
       generation[j].calcQuality();
     }
@@ -61,9 +60,7 @@ int main(int argc, char **argv){
     }
     genSort(generation,GEN_SIZE);//sort according to dominance
     //record keeping
-    for(int j = 0;j < GEN_SIZE;j++){
-      generation[j].toCSV(fout);
-    }
+    generation[0].toCSV(fout);
     //elitism
     for(int j = 0;j < ELITISM;j++){
       nextGen[j] = generation[j];
@@ -90,9 +87,13 @@ int main(int argc, char **argv){
   }
   genSort(generation,GEN_SIZE);//sort according to dominance
   //record keeping
-  for(int j = 0;j < GEN_SIZE;j++){
-    generation[j].toCSV(fout);
+  generation[0].toCSV(fout);
+  fout.close();
+  fout.open(argv[2]);
+  if(!fout){
+    cout << "Problem opening scad file" <<endl;
   }
+  generation[0].toScad(fout);
   fout.close();
   return 0;
 }

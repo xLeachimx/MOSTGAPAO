@@ -34,6 +34,7 @@ public:
   int getConnectivity();
   int getPhiRating();
   void toCSV(ostream &out);//outputs quality values
+  void toScad(ostream &out);//outputs voxel to scad file for viewing
 
   void calcQuality();
   void calcFitness(Object *gen, int size, int skip);
