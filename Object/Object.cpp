@@ -61,7 +61,9 @@ void Object::toScad(ostream &out){
 }
 
 void Object::calcQuality(){
-  for(int i = 0;i < NUM_VOX;i++)applyTansform(voxels[i]);
+  for(int i = 0;i < NUM_VOX;i++){
+    applyTansform(voxels[i]);
+  }
   calcConnectivity();
   calcPhiRating();
 }
@@ -161,7 +163,7 @@ void Object::calcPhiRating(){
   double width = maxX-minX;
   double height = maxZ-minZ;
   double depth = maxY-minY;
-  phiRating = abs((PHI - (width/height))+(PHI - (depth/width)));
+  phiRating = abs((PHI - (width/height)))+abs((PHI - (depth/width))); //actually calculate the use of golden rectangles in the bounding box
 }
 
 bool Object::pareToDominate(const Object &comp){
