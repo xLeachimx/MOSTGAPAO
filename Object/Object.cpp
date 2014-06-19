@@ -165,10 +165,9 @@ void Object::calcBoundingBox(){
 }
 
 void Object::calcPhiRating(){
-  
-  double width = maxX-minX;
-  double height = maxZ-minZ;
-  double depth = maxY-minY;
+  double width = xMax-xMin;
+  double height = zMax-zMin;
+  double depth = yMax-yMin;
   phiRating = abs((PHI - (width/height)))+abs((PHI - (depth/width))); //actually calculate the use of golden rectangles in the bounding box
 }
 
