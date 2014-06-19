@@ -192,7 +192,7 @@ void Object::calcSymmetry(){
   double xSymm = abs(1-(xPos/(NUM_VOX-xPos)));
   double ySymm = abs(1-(yPos/(NUM_VOX-yPos)));
   double zSymm = abs(1-(zPos/(NUM_VOX-zPos)));
-  symmetry = 3-(xSymm+ySymm+zSymm);//try to get all symmetry values to be 1
+  symmetry = abs(3-(xSymm+ySymm+zSymm));//try to get all symmetry values to be 1
 }
 
 void Object::calcComplexity(){
@@ -214,7 +214,7 @@ void Object::calcComplexity(){
       }
     }
   }
-  complexity = 2-((double)NUM_VOX/(double)inner);
+  complexity = abs(2-((double)NUM_VOX/(double)inner));
 }
 
 bool Object::pareToDominate(const Object &comp){
