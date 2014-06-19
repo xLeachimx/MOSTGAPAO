@@ -128,39 +128,44 @@ void Object::calcConnectivity(){
   connectivity = abs((NUM_VOX/CON_RATIO)-(connections/NUM_VOX));
 }
 
-void Object::calcPhiRating(){
-  double maxX = voxels[0].x+voxels[0].size;
-  double maxY = voxels[0].y+voxels[0].size;
-  double maxZ = voxels[0].z+voxels[0].size;
-  double minX = voxels[0].x-voxels[0].size;
-  double minY = voxels[0].y-voxels[0].size;
-  double minZ = voxels[0].z-voxels[0].size;
+//sets the bbox variable
+void Object::calcBoundingBox(){
+  bbox.xMax = voxels[0].x+voxels[0].size;
+  bbox.yMax = voxels[0].y+voxels[0].size;
+  bbox.zMax = voxels[0].z+voxels[0].size;
+  bbox.xMin = voxels[0].x-voxels[0].size;
+  bbox.yMin = voxels[0].y-voxels[0].size;
+  bbox.zMin = voxels[0].z-voxels[0].size;
 
   for(int i = 1;i < NUM_VOX;i++){
     //reassign x
-    if(maxX < voxels[i].x+voxels[i].size){
-      maxX = voxels[i].x+voxels[i].size;
+    if(bbox.xMax < voxels[i].x+voxels[i].size){
+      bbox.yMax = voxels[i].x+voxels[i].size;
     }
-    else if(minX > voxels[i].x-voxels[i].size){
-      minX = voxels[i].x-voxels[i].size;
+    else if(bbox.yMin > voxels[i].x-voxels[i].size){
+      bbox.yMin = voxels[i].x-voxels[i].size;
     }
     
     //reassign y
-    if(maxY < voxels[i].y+voxels[i].size){
-      maxY = voxels[i].y+voxels[i].size;
+    if(bbox.xMax < voxels[i].y+voxels[i].size){
+      bbox.yMax = voxels[i].y+voxels[i].size;
     }
-    else if(minY > voxels[i].y-voxels[i].size){
-      minY = voxels[i].y-voxels[i].size;
+    else if(bbox.yMin > voxels[i].y-voxels[i].size){
+      bbox.yMin = voxels[i].y-voxels[i].size;
     }
 
     //reassign z
-    if(maxZ < voxels[i].z+voxels[i].size){
-      maxZ = voxels[i].z+voxels[i].size;
+    if(bbox.zMax < voxels[i].z+voxels[i].size){
+      bbox.zMax = voxels[i].z+voxels[i].size;
     }
-    else if(minZ > voxels[i].z-voxels[i].size){
-      minZ = voxels[i].z-voxels[i].size;
+    else if(bbox.zMin > voxels[i].z-voxels[i].size){
+      bbox.zMin = voxels[i].z-voxels[i].size;
     }
   }
+}
+
+void Object::calcPhiRating(){
+  
   double width = maxX-minX;
   double height = maxZ-minZ;
   double depth = maxY-minY;

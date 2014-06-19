@@ -60,7 +60,7 @@ public:
   Object &operator=(const Object &copy);
 protected:
   void applyTransform(voxel &v);//This is where the schema transform happens
-  void calcBoundingBox();//TODO implement
+  void calcBoundingBox();
   void calcConnectivity();
   void calcPhiRating();
   void calcSymmetry();//TODO implement
