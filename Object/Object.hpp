@@ -64,7 +64,7 @@ protected:
   void calcConnectivity();
   void calcPhiRating();
   void calcSymmetry();
-  void calcComplexity();//TODO implments
+  void calcComplexity();
   bool pareToDominate(const Object &comp);//is this object pareto dominant over the comp object
   double distance(int one,int two);//finds the distance between two voxels
 private:
