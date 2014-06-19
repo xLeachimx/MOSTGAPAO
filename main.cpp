@@ -53,7 +53,7 @@ int main(int argc, char **argv){
   //primordial soup generation
   primSoup(generation, GEN_SIZE);
 
-  fout << "Generation,Top Connectivity,Top PhiRating" <<endl;//simple explanatory labels
+  fout << "Generation,Connectivity,Phi Rating,Complexity,Symmetry" <<endl;//simple explanatory labels
 
   //running the GA
   for(int i = 0;i < NUM_GEN;i++){
