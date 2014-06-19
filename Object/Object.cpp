@@ -115,19 +115,6 @@ void Object::applyTransform(voxel &v){
   v.size = (v.size < 0)?-v.size:v.size;//ensure non-negative number
 }
 
-void Object::calcConnectivity(){
-  double connections = 0.0;
-  for(int i = 0;i < NUM_VOX;i++){
-    for(int j = 0;j < NUM_VOX;j++){
-      if(i != j){
-	int comparedSize = voxels[i].size + voxels[j].size;
-	if(distance(i,j) < comparedSize)connections++;
-      }
-    }
-  }
-  connectivity = abs((NUM_VOX/CON_RATIO)-(connections/NUM_VOX));
-}
-
 //sets the bbox variable
 void Object::calcBoundingBox(){
   bbox.xMax = voxels[0].x+voxels[0].size;
@@ -164,11 +151,39 @@ void Object::calcBoundingBox(){
   }
 }
 
+void Object::calcConnectivity(){
+  double connections = 0.0;
+  for(int i = 0;i < NUM_VOX;i++){
+    for(int j = 0;j < NUM_VOX;j++){
+      if(i != j){
+	int comparedSize = voxels[i].size + voxels[j].size;
+	if(distance(i,j) < comparedSize)connections++;
+      }
+    }
+  }
+  connectivity = abs((NUM_VOX/CON_RATIO)-(connections/NUM_VOX));
+}
+
 void Object::calcPhiRating(){
-  double width = xMax-xMin;
-  double height = zMax-zMin;
-  double depth = yMax-yMin;
+  double width = bBox.xMax-bBox.xMin;
+  double height = bBox.zMax-bBox.zMin;
+  double depth = bBox.yMax-bBox.yMin;
   phiRating = abs((PHI - (width/height)))+abs((PHI - (depth/width))); //actually calculate the use of golden rectangles in the bounding box
+}
+
+void Object::calcSymmetry(){
+  double xPos = 0.0;//amount of voxels with positive x values
+  double yPos = 0.0;//amount of voxels with positive y values
+  double zPos = 0.0;//amount of voxels with psoitive z values
+  for(int i = 0;i < NUM_VOX;i++){
+    if(voxels[i].x > 0)xPos++;
+    if(voxels[i].y > 0)yPos++;
+    if(voxels[i].z > 0)zPos++;
+  }
+  double xSymm = abs(1-(xPos/(NUM_VOX-xPos)));
+  double ySymm = abs(1-(yPos/(NUM_VOX-yPos)));
+  double zSymm = abs(1-(zPos/(NUM_VOX-zPos)));
+  symmetry = 3-(xSymm+ySymm+zSymm);//try to get all symmetry values to be 1
 }
 
 bool Object::pareToDominate(const Object &comp){
