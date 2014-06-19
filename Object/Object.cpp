@@ -14,6 +14,8 @@ using std::endl;
 Object::Object(){
   connectivity = 0.0;
   phiRating = 0.0;
+  complexity = 0.0;
+  symmetry = 0.0;
   fitness = 0;
 }
 
@@ -23,6 +25,8 @@ Object::Object(voxel copy[NUM_VOX]){
   }
   connectivity = 0.0;
   phiRating = 0.0;
+  complexity = 0.0;
+  symmetry = 0.0;
   fitness = 0;
 }
 
@@ -32,6 +36,8 @@ Object::Object(const Object &copy){
   }
   connectivity = copy.connectivity;
   phiRating = copy.phiRating;
+  complexity = copy.complexity;
+  symmetry = copy.symmetry;
   fitness = copy.fitness;
 }
 
@@ -49,7 +55,7 @@ int Object::getPhiRating(){
 }
 
 void Object::toCSV(ostream &out){
-  out << connectivity << "," << phiRating << '\n';
+  out << connectivity << "," << phiRating << "," << complexity << "," << symmetry <<'\n';
 }
 
 void Object::toScad(ostream &out){
@@ -65,8 +71,11 @@ void Object::calcQuality(){
   for(int i = 0;i < NUM_VOX;i++){
     applyTransform(voxels[i]);
   }
+  calcBoundingBox();
   calcConnectivity();
+  calcComplexity();
   calcPhiRating();
+  calcSymmetry();
 }
 
 void Object::calcFitness(Object *gen, int size){
@@ -115,6 +124,42 @@ void Object::applyTransform(voxel &v){
   v.size = (v.size < 0)?-v.size:v.size;//ensure non-negative number
 }
 
+//sets the bBox variable
+void Object::calcBoundingBox(){
+  bBox.xMax = voxels[0].x+voxels[0].size;
+  bBox.yMax = voxels[0].y+voxels[0].size;
+  bBox.zMax = voxels[0].z+voxels[0].size;
+  bBox.xMin = voxels[0].x-voxels[0].size;
+  bBox.yMin = voxels[0].y-voxels[0].size;
+  bBox.zMin = voxels[0].z-voxels[0].size;
+
+  for(int i = 1;i < NUM_VOX;i++){
+    //reassign x
+    if(bBox.xMax < voxels[i].x+voxels[i].size){
+      bBox.yMax = voxels[i].x+voxels[i].size;
+    }
+    else if(bBox.yMin > voxels[i].x-voxels[i].size){
+      bBox.yMin = voxels[i].x-voxels[i].size;
+    }
+    
+    //reassign y
+    if(bBox.xMax < voxels[i].y+voxels[i].size){
+      bBox.yMax = voxels[i].y+voxels[i].size;
+    }
+    else if(bBox.yMin > voxels[i].y-voxels[i].size){
+      bBox.yMin = voxels[i].y-voxels[i].size;
+    }
+
+    //reassign z
+    if(bBox.zMax < voxels[i].z+voxels[i].size){
+      bBox.zMax = voxels[i].z+voxels[i].size;
+    }
+    else if(bBox.zMin > voxels[i].z-voxels[i].size){
+      bBox.zMin = voxels[i].z-voxels[i].size;
+    }
+  }
+}
+
 void Object::calcConnectivity(){
   double connections = 0.0;
   for(int i = 0;i < NUM_VOX;i++){
@@ -129,47 +174,52 @@ void Object::calcConnectivity(){
 }
 
 void Object::calcPhiRating(){
-  double maxX = voxels[0].x+voxels[0].size;
-  double maxY = voxels[0].y+voxels[0].size;
-  double maxZ = voxels[0].z+voxels[0].size;
-  double minX = voxels[0].x-voxels[0].size;
-  double minY = voxels[0].y-voxels[0].size;
-  double minZ = voxels[0].z-voxels[0].size;
-
-  for(int i = 1;i < NUM_VOX;i++){
-    //reassign x
-    if(maxX < voxels[i].x+voxels[i].size){
-      maxX = voxels[i].x+voxels[i].size;
-    }
-    else if(minX > voxels[i].x-voxels[i].size){
-      minX = voxels[i].x-voxels[i].size;
-    }
-    
-    //reassign y
-    if(maxY < voxels[i].y+voxels[i].size){
-      maxY = voxels[i].y+voxels[i].size;
-    }
-    else if(minY > voxels[i].y-voxels[i].size){
-      minY = voxels[i].y-voxels[i].size;
-    }
-
-    //reassign z
-    if(maxZ < voxels[i].z+voxels[i].size){
-      maxZ = voxels[i].z+voxels[i].size;
-    }
-    else if(minZ > voxels[i].z-voxels[i].size){
-      minZ = voxels[i].z-voxels[i].size;
-    }
-  }
-  double width = maxX-minX;
-  double height = maxZ-minZ;
-  double depth = maxY-minY;
+  double width = bBox.xMax-bBox.xMin;
+  double height = bBox.zMax-bBox.zMin;
+  double depth = bBox.yMax-bBox.yMin;
   phiRating = abs((PHI - (width/height)))+abs((PHI - (depth/width))); //actually calculate the use of golden rectangles in the bounding box
 }
 
+void Object::calcSymmetry(){
+  double xPos = 0.0;//amount of voxels with positive x values
+  double yPos = 0.0;//amount of voxels with positive y values
+  double zPos = 0.0;//amount of voxels with psoitive z values
+  for(int i = 0;i < NUM_VOX;i++){
+    if(voxels[i].x > 0)xPos++;
+    if(voxels[i].y > 0)yPos++;
+    if(voxels[i].z > 0)zPos++;
+  }
+  double xSymm = abs(1-(xPos/(NUM_VOX-xPos)));
+  double ySymm = abs(1-(yPos/(NUM_VOX-yPos)));
+  double zSymm = abs(1-(zPos/(NUM_VOX-zPos)));
+  symmetry = abs(3-(xSymm+ySymm+zSymm));//try to get all symmetry values to be 1
+}
+
+void Object::calcComplexity(){
+  int inner = 0.0; //number of voxels inside the internal bounding box
+  double xInter = (bBox.xMax-bBox.xMin)/4; 
+  double yInter = (bBox.yMax-bBox.yMin)/4;
+  double zInter = (bBox.zMax-bBox.zMin)/4;
+  BoundingBox internal;
+  internal.xMin = bBox.xMin + xInter;
+  internal.xMax = bBox.xMin + (3*xInter);
+  internal.yMin = bBox.yMin + yInter;
+  internal.yMax = bBox.yMin + (3*yInter);
+  internal.zMin = bBox.zMin + zInter;
+  internal.zMax = bBox.zMin + (3*zInter);
+  for(int i = 0;i < NUM_VOX;i++){
+    if(voxels[i].x >= internal.xMin && voxels[i].x <= internal.xMax){
+      if(voxels[i].y >= internal.yMin && voxels[i].y <= internal.yMax){
+	if(voxels[i].z >= internal.zMin && voxels[i].z <= internal.zMax)inner++;
+      }
+    }
+  }
+  complexity = abs(2-((double)NUM_VOX/(double)inner));
+}
+
 bool Object::pareToDominate(const Object &comp){
-  if(connectivity <= comp.connectivity && phiRating <= comp.phiRating){
-    if(connectivity < comp.connectivity || phiRating < comp.phiRating)return true;
+  if(connectivity <= comp.connectivity && phiRating <= comp.phiRating && complexity <= comp.complexity && symmetry <= comp.symmetry){
+    if(connectivity < comp.connectivity || phiRating < comp.phiRating || complexity < comp.complexity || symmetry < comp.symmetry)return true;
   }
   return false;
 }
