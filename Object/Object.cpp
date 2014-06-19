@@ -9,6 +9,7 @@
 #include <cmath>
 using std::sqrt;
 using std::abs;
+using std::endl;
 
 Object::Object(){
   connectivity = 0.0;
@@ -62,7 +63,7 @@ void Object::toScad(ostream &out){
 
 void Object::calcQuality(){
   for(int i = 0;i < NUM_VOX;i++){
-    applyTansform(voxels[i]);
+    applyTransform(voxels[i]);
   }
   calcConnectivity();
   calcPhiRating();
@@ -110,7 +111,7 @@ Object &Object::operator=(const Object &copy){
 }
 
 void Object::applyTransform(voxel &v){
-  v.size = ((v.x + v.y + v.z)/3)|1;//ensures the size is at least 1
+  v.size = ((v.x | v.y) ^ v.z)|1;//ensures the size is at least 1
   v.size = (v.size < 0)?-v.size:v.size;//ensure non-negative number
 }
 
