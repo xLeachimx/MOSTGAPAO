@@ -45,8 +45,8 @@ public:
   void toCSV(ostream &out);//outputs quality values
   void toScad(ostream &out);//outputs voxel to scad file for viewing
 
-  void calcQuality();//TODO update
-  void calcFitness(Object *gen, int size);//calculates fitness using amount of pareto dominances TODO update
+  void calcQuality();
+  void calcFitness(Object *gen, int size);//calculates fitness using amount of pareto dominances
 
   //conparative operators (they compare using pareto dominance over the connectivity and phiRating qualities)
   bool operator>(const Object &comp);
