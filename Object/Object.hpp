@@ -18,6 +18,15 @@ struct voxel{
   char size;
 };
 
+struct BoundingBox{
+  int xMax;
+  int xMin;
+  int yMax;
+  int yMin;
+  int zMax;
+  int zMin;
+};
+
 const int NUM_VOX = 300;
 const double CON_RATIO = 4.0; //Ratio for maximum connectivity
 const int PHI = 1.618033988;
@@ -36,8 +45,8 @@ public:
   void toCSV(ostream &out);//outputs quality values
   void toScad(ostream &out);//outputs voxel to scad file for viewing
 
-  void calcQuality();
-  void calcFitness(Object *gen, int size);//calculates fitness using amount of pareto dominances
+  void calcQuality();//TODO update
+  void calcFitness(Object *gen, int size);//calculates fitness using amount of pareto dominances TODO update
 
   //conparative operators (they compare using pareto dominance over the connectivity and phiRating qualities)
   bool operator>(const Object &comp);
@@ -51,14 +60,20 @@ public:
   Object &operator=(const Object &copy);
 protected:
   void applyTransform(voxel &v);//This is where the schema transform happens
+  void calcBoundingBox();//TODO implement
   void calcConnectivity();
   void calcPhiRating();
+  void calcSymmetry();//TODO implement
+  void calcComplexity();//TODO implments
   bool pareToDominate(const Object &comp);//is this object pareto dominant over the comp object
   double distance(int one,int two);//finds the distance between two voxels
 private:
   voxel voxels[NUM_VOX];
+  BoundingBox bBox;
   double connectivity;
   double phiRating;
+  double symmetry;
+  double complexity;
   int fitness;
 };
 
