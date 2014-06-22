@@ -61,10 +61,15 @@ void Object::toCSV(ostream &out){
 void Object::toScad(ostream &out){
   out << "//Connectivity:" << connectivity << endl;
   out << "//Phi Rating:" << phiRating <<endl;
+  out << "//Complexity:" << complexity <<endl;
+  out << "//Symmetry:" << symmetry <<endl;
+  out << "//Space Use" << spaceUse << endl;
+  out << "hull(){" << endl;
   for(int i = 0;i < NUM_VOX;i++){
     out << "translate([" << (int)voxels[i].x << "," << (int)voxels[i].y << "," << (int)voxels[i].z << "])";
     out << "sphere(r=" << (int)voxels[i].size << ");" <<endl;
   }
+  out << "}" <<endl;
 }
 
 void Object::calcQuality(){
@@ -76,6 +81,7 @@ void Object::calcQuality(){
   calcComplexity();
   calcPhiRating();
   calcSymmetry();
+  calcSpaceUse();
 }
 
 void Object::calcFitness(Object *gen, int size){
@@ -181,22 +187,28 @@ void Object::calcPhiRating(){
 }
 
 void Object::calcSymmetry(){
-  double xPos = 0.0;//amount of voxels with positive x values
-  double yPos = 0.0;//amount of voxels with positive y values
-  double zPos = 0.0;//amount of voxels with psoitive z values
+  double xPos = 1.0;//amount of voxels with positive x values
+  double yPos = 1.0;//amount of voxels with positive y values
+  double zPos = 1.0;//amount of voxels with positive z values
+  double xNeg = 1.0;//amount of voxels with negative x values
+  double yNeg = 1.0;//amount of voxels with negative y values
+  double zNeg = 1.0;//amount of voxels with negative z values
   for(int i = 0;i < NUM_VOX;i++){
-    if(voxels[i].x > 0)xPos++;
-    if(voxels[i].y > 0)yPos++;
-    if(voxels[i].z > 0)zPos++;
+    if(voxels[i].x-voxels[i].size > 0)xPos++;
+    if(voxels[i].y-voxels[i].size > 0)yPos++;
+    if(voxels[i].z-voxels[i].size > 0)zPos++;
+    if(voxels[i].x+voxels[i].size < 0)xNeg++;
+    if(voxels[i].y+voxels[i].size < 0)yNeg++;
+    if(voxels[i].z+voxels[i].size < 0)zNeg++;
   }
-  double xSymm = abs(1-(xPos/(NUM_VOX-xPos)));
-  double ySymm = abs(1-(yPos/(NUM_VOX-yPos)));
-  double zSymm = abs(1-(zPos/(NUM_VOX-zPos)));
-  symmetry = abs(3-(xSymm+ySymm+zSymm));//try to get all symmetry values to be 1
+  double xSymm = abs(1-(xPos/xNeg));
+  double ySymm = abs(1-(yPos/yNeg));
+  double zSymm = abs(1-(zPos/zNeg));
+  symmetry = (xSymm+ySymm+zSymm);//try to get all symmetry values to be 1
 }
 
 void Object::calcComplexity(){
-  int inner = 0.0; //number of voxels inside the internal bounding box
+  int outer = 0.0; //number of voxels inside the internal bounding box
   double xInter = (bBox.xMax-bBox.xMin)/4; 
   double yInter = (bBox.yMax-bBox.yMin)/4;
   double zInter = (bBox.zMax-bBox.zMin)/4;
@@ -207,19 +219,26 @@ void Object::calcComplexity(){
   internal.yMax = bBox.yMin + (3*yInter);
   internal.zMin = bBox.zMin + zInter;
   internal.zMax = bBox.zMin + (3*zInter);
+  outer = NUM_VOX;
   for(int i = 0;i < NUM_VOX;i++){
-    if(voxels[i].x >= internal.xMin && voxels[i].x <= internal.xMax){
-      if(voxels[i].y >= internal.yMin && voxels[i].y <= internal.yMax){
-	if(voxels[i].z >= internal.zMin && voxels[i].z <= internal.zMax)inner++;
+    if(voxels[i].x-voxels[i].size >= internal.xMin && voxels[i].x+voxels[i].size <= internal.xMax){
+      if(voxels[i].y-voxels[i].size >= internal.yMin && voxels[i].y+voxels[i].size <= internal.yMax){
+	if(voxels[i].z-voxels[i].size >= internal.zMin && voxels[i].z+voxels[i].size <= internal.zMax)outer--;
       }
     }
   }
-  complexity = abs(2-((double)NUM_VOX/(double)inner));
+  complexity = abs(5-(((double)NUM_VOX+1)/((double)outer+1)));
+}
+
+void Object::calcSpaceUse(){
+  double totalSpace = ((double)CHAR_MAX_VAL*(double)CHAR_MAX_VAL*(double)CHAR_MAX_VAL);
+  double spaceUsed = (bBox.xMax-bBox.xMin)*(bBox.yMax-bBox.yMin)*(bBox.zMax-bBox.zMin);
+  spaceUse = abs(OPTIMAL_SPACE - (spaceUsed/totalSpace));
 }
 
 bool Object::pareToDominate(const Object &comp){
-  if(connectivity <= comp.connectivity && phiRating <= comp.phiRating && complexity <= comp.complexity && symmetry <= comp.symmetry){
-    if(connectivity < comp.connectivity || phiRating < comp.phiRating || complexity < comp.complexity || symmetry < comp.symmetry)return true;
+  if(connectivity <= comp.connectivity && phiRating <= comp.phiRating && complexity <= comp.complexity && symmetry <= comp.symmetry && spaceUse <= comp.spaceUse){
+    if(connectivity < comp.connectivity || phiRating < comp.phiRating || complexity < comp.complexity || symmetry < comp.symmetry || spaceUse < comp.spaceUse)return true;
   }
   return false;
 }
