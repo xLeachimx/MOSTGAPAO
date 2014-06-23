@@ -27,7 +27,7 @@ struct BoundingBox{
   int zMin;
 };
 
-const int NUM_VOX = 300;
+const int NUM_VOX = 100;
 const double CON_RATIO = 4.0; //Ratio for maximum connectivity
 const int PHI = 1.618033988;
 
@@ -66,7 +66,7 @@ protected:
   void calcSymmetry();
   void calcComplexity();
   bool pareToDominate(const Object &comp);//is this object pareto dominant over the comp object
-  double distance(int one,int two);//finds the distance between two voxels
+  double distance(voxel &one,voxel &two);//finds the distance between two voxels
 private:
   voxel voxels[NUM_VOX];
   BoundingBox bBox;
