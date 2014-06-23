@@ -20,10 +20,10 @@ using std::time;
 #include "Object.hpp"
 #include "Genetics.hpp"
 
-const int NUM_GEN = 1000;
+const int NUM_GEN = 300;
 const int GEN_SIZE = 100;
 const int ELITISM = 2;
-const int RUNS = 5;
+const int RUNS = 100;
 
 void primSoup(Object generation[], int size);//generates a random first generation
 
