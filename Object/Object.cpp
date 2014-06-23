@@ -170,7 +170,7 @@ void Object::calcConnectivity(){
     for(int j = 0;j < NUM_VOX;j++){
       if(i != j){
 	int comparedSize = voxels[i].size + voxels[j].size;
-	if(distance(i,j) < comparedSize)connections++;
+	if(distance(voxels[i],voxels[j]) < comparedSize)connections++;
       }
     }
   }
@@ -184,25 +184,42 @@ void Object::calcPhiRating(){
   phiRating = abs((PHI - (width/height)))+abs((PHI - (depth/width))); //actually calculate the use of golden rectangles in the bounding box
 }
 
+//tests for symmetry accross the planes: x=0, y=0, and z=0
 void Object::calcSymmetry(){
-  double xPos = 1.0;//amount of voxels with positive x values
-  double yPos = 1.0;//amount of voxels with positive y values
-  double zPos = 1.0;//amount of voxels with positive z values
-  double xNeg = 1.0;//amount of voxels with negative x values
-  double yNeg = 1.0;//amount of voxels with negative y values
-  double zNeg = 1.0;//amount of voxels with negative z values
+  symmetry = 0.0;
   for(int i = 0;i < NUM_VOX;i++){
-    if(voxels[i].x-voxels[i].size > 0)xPos++;
-    if(voxels[i].y-voxels[i].size > 0)yPos++;
-    if(voxels[i].z-voxels[i].size > 0)zPos++;
-    if(voxels[i].x+voxels[i].size < 0)xNeg++;
-    if(voxels[i].y+voxels[i].size < 0)yNeg++;
-    if(voxels[i].z+voxels[i].size < 0)zNeg++;
+    voxel antiX, antiY, antiZ;
+    antiX = antiY = antiZ = voxels[i];
+    antiX.x = -antiX.x;
+    antiY.y = -antiY.y;
+    antiZ.z = -antiZ.z;
+    voxel xClosest = voxels[0];
+    double xDist = distance(xClosest,antiX);
+    voxel yClosest = voxels[0];
+    double yDist = distance(xClosest,antiY);
+    voxel zClosest = voxels[0];
+    double zDist = distance(xClosest,antiZ);
+    for(int j = 1; j < NUM_VOX;j++){
+      //closest object to hypothetical reflection on xAxis
+      if(xDist > distance(antiX,voxels[j])){
+	xClosest = voxels[j];
+	xDist = distance(antiX,voxels[j]);
+      }
+
+      if(yDist > distance(antiY,voxels[j])){
+	yClosest = voxels[j];
+	yDist = distance(antiY,voxels[j]);
+      }
+
+      if(zDist > distance(antiZ,voxels[j])){
+	zClosest = voxels[j];
+	zDist = distance(antiZ,voxels[j]);
+      }
+    }
+    //add to the symmetry count
+    double sizeComp = abs(xClosest.size-antiX.size) + abs(yClosest.size-antiY.size) + abs(zClosest.size-antiZ.size);
+    symmetry += (xDist+yDist+zDist)+sizeComp;
   }
-  double xSymm = abs(1-((xPos+xNeg)/NUM_VOX));
-  double ySymm = abs(1-((yPos+yNeg)/NUM_VOX));
-  double zSymm = abs(1-((zPos+zNeg)/NUM_VOX));
-  symmetry = (xSymm+ySymm+zSymm);//try to get all symmetry values to be 1
 }
 
 void Object::calcComplexity(){
@@ -235,9 +252,9 @@ bool Object::pareToDominate(const Object &comp){
   return false;
 }
 
-double Object::distance(int one, int two){
-  double x = (double)((int)voxels[one].x-(int)voxels[two].x);
-  double y = (double)((int)voxels[one].y-(int)voxels[two].y);
-  double z = (double)((int)voxels[one].z-(int)voxels[two].z);
+double Object::distance(voxel &one, voxel &two){
+  double x = (double)((int)one.x-(int)two.x);
+  double y = (double)((int)one.y-(int)two.y);
+  double z = (double)((int)one.z-(int)two.z);
   return sqrt((x*x) + (y*y) + (z*z));
 }
