@@ -30,8 +30,6 @@ struct BoundingBox{
 const int NUM_VOX = 300;
 const double CON_RATIO = 4.0; //Ratio for maximum connectivity
 const int PHI = 1.618033988;
-const int CHAR_MAX_VAL = 255;
-const double OPTIMAL_SPACE = .5;
 
 class Object{
 public:
@@ -67,7 +65,6 @@ protected:
   void calcPhiRating();
   void calcSymmetry();
   void calcComplexity();
-  void calcSpaceUse();
   bool pareToDominate(const Object &comp);//is this object pareto dominant over the comp object
   double distance(int one,int two);//finds the distance between two voxels
 private:
@@ -77,7 +74,6 @@ private:
   double phiRating;
   double symmetry;
   double complexity;
-  double spaceUse;
   int fitness;
 };
 

@@ -63,7 +63,6 @@ void Object::toScad(ostream &out){
   out << "//Phi Rating:" << phiRating <<endl;
   out << "//Complexity:" << complexity <<endl;
   out << "//Symmetry:" << symmetry <<endl;
-  out << "//Space Use" << spaceUse << endl;
   out << "hull(){" << endl;
   for(int i = 0;i < NUM_VOX;i++){
     out << "translate([" << (int)voxels[i].x << "," << (int)voxels[i].y << "," << (int)voxels[i].z << "])";
@@ -81,7 +80,6 @@ void Object::calcQuality(){
   calcComplexity();
   calcPhiRating();
   calcSymmetry();
-  calcSpaceUse();
 }
 
 void Object::calcFitness(Object *gen, int size){
@@ -201,17 +199,17 @@ void Object::calcSymmetry(){
     if(voxels[i].y+voxels[i].size < 0)yNeg++;
     if(voxels[i].z+voxels[i].size < 0)zNeg++;
   }
-  double xSymm = abs(1-(xPos/xNeg));
-  double ySymm = abs(1-(yPos/yNeg));
-  double zSymm = abs(1-(zPos/zNeg));
+  double xSymm = abs(1-((xPos+xNeg)/NUM_VOX));
+  double ySymm = abs(1-((yPos+yNeg)/NUM_VOX));
+  double zSymm = abs(1-((zPos+zNeg)/NUM_VOX));
   symmetry = (xSymm+ySymm+zSymm);//try to get all symmetry values to be 1
 }
 
 void Object::calcComplexity(){
   int outer = 0.0; //number of voxels inside the internal bounding box
-  double xInter = (bBox.xMax-bBox.xMin)/4; 
-  double yInter = (bBox.yMax-bBox.yMin)/4;
-  double zInter = (bBox.zMax-bBox.zMin)/4;
+  double xInter = (bBox.xMax-bBox.xMin)/4.0; 
+  double yInter = (bBox.yMax-bBox.yMin)/4.0;
+  double zInter = (bBox.zMax-bBox.zMin)/4.0;
   BoundingBox internal;
   internal.xMin = bBox.xMin + xInter;
   internal.xMax = bBox.xMin + (3*xInter);
@@ -227,18 +225,12 @@ void Object::calcComplexity(){
       }
     }
   }
-  complexity = abs(5-(((double)NUM_VOX+1)/((double)outer+1)));
-}
-
-void Object::calcSpaceUse(){
-  double totalSpace = ((double)CHAR_MAX_VAL*(double)CHAR_MAX_VAL*(double)CHAR_MAX_VAL);
-  double spaceUsed = (bBox.xMax-bBox.xMin)*(bBox.yMax-bBox.yMin)*(bBox.zMax-bBox.zMin);
-  spaceUse = abs(OPTIMAL_SPACE - (spaceUsed/totalSpace));
+  complexity = abs(5-(((double)NUM_VOX-outer)/((double)outer)));
 }
 
 bool Object::pareToDominate(const Object &comp){
-  if(connectivity <= comp.connectivity && phiRating <= comp.phiRating && complexity <= comp.complexity && symmetry <= comp.symmetry && spaceUse <= comp.spaceUse){
-    if(connectivity < comp.connectivity || phiRating < comp.phiRating || complexity < comp.complexity || symmetry < comp.symmetry || spaceUse < comp.spaceUse)return true;
+  if(connectivity <= comp.connectivity && phiRating <= comp.phiRating && complexity <= comp.complexity && symmetry <= comp.symmetry){
+    if(connectivity < comp.connectivity || phiRating < comp.phiRating || complexity < comp.complexity || symmetry < comp.symmetry)return true;
   }
   return false;
 }
