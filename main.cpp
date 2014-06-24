@@ -23,7 +23,7 @@ using std::time;
 const int NUM_GEN = 300;
 const int GEN_SIZE = 100;
 const int ELITISM = 2;
-const int RUNS = 100;
+const int RUNS = 1000;
 
 void primSoup(Object generation[], int size);//generates a random first generation
 
