@@ -119,6 +119,8 @@ Object &Object::operator=(const Object &copy){
   }
   connectivity = copy.connectivity;
   phiRating = copy.phiRating;
+  complexity = copy.complexity;
+  symmetry = copy.symmetry;
   fitness = copy.fitness;
   return *this;
 }
