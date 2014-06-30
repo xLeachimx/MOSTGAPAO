@@ -26,6 +26,7 @@ STGA
 
 #data records
 *.csv
+*.py
 
 #design info
 *.scad
