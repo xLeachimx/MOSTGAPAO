@@ -1,5 +1,7 @@
-Schema Transformation Multi-Objective Genetic Algorithm for the Production of Aesthetic Objects(STMOGAPAO)
+STMOGAPAO
 ==============
+Full Name:
+Schema Transformation Multi-Objective Genetic Algorithm for the Production of Aesthetic Objects
 
 A new technique that reduces the search space of a genertic algorithm through the use of schema transforms.
 
