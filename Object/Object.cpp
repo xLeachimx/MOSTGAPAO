@@ -126,8 +126,15 @@ Object &Object::operator=(const Object &copy){
 }
 
 void Object::applyTransform(voxel &v){
-  v.size = ((v.x | v.y) ^ v.z)|1;//ensures the size is at least 1
-  v.size = (v.size < 0)?-v.size:v.size;//ensure non-negative number
+  voxel origin;
+  origin.x = 0;
+  origin.y = 0;
+  origin.z = 0;
+  int size = (int)distance(origin,v);
+  size += 1;
+  v.size = (char)size;
+  //v.size = ((v.x | v.y) ^ v.z)|1;//ensures the size is at least 1
+  //v.size = (v.size < 0)?-v.size:v.size;//ensure non-negative number
 }
 
 //sets the bBox variable
